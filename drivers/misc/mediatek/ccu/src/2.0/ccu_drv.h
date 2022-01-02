@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -56,9 +56,9 @@ struct CCU_IRQ_TIME_STRUCT {
 	unsigned int tLastSig_usec;
 /* time stamp of the latest occurring signal */
 	unsigned int tMark2WaitSig_sec;
-/* time period from marking a signal to user to wait and get the signal */
+/* time period from marking a signal to user try to wait and get the signal */
 	unsigned int tMark2WaitSig_usec;
-/* time period from marking a signal to user to wait and get the signal */
+/* time period from marking a signal to user try to wait and get the signal */
 	unsigned int tLastSig2GetSig_sec;
 /* time period from latest signal to user try to wait and get the signal */
 	unsigned int tLastSig2GetSig_usec;
@@ -109,14 +109,15 @@ struct CCU_REG_IO_STRUCT {
 };
 
 struct CCU_IRQ_INFO_STRUCT {
+	/* Add an extra index for status type in ever -> signal or dma */
 	unsigned int Status[CCU_IRQ_TYPE_AMOUNT][CCU_IRQ_ST_AMOUNT]
-			[IRQ_USER_NUM_MAX];
+		[IRQ_USER_NUM_MAX];
 	unsigned int Mask[CCU_IRQ_TYPE_AMOUNT][CCU_IRQ_ST_AMOUNT];
 	unsigned int ErrMask[CCU_IRQ_TYPE_AMOUNT][CCU_IRQ_ST_AMOUNT];
 	signed int WarnMask[CCU_IRQ_TYPE_AMOUNT][CCU_IRQ_ST_AMOUNT];
 	/* flag for indicating that user do mark for a interrupt or not */
 	unsigned int MarkedFlag[CCU_IRQ_TYPE_AMOUNT][CCU_IRQ_ST_AMOUNT]
-			[IRQ_USER_NUM_MAX];
+		[IRQ_USER_NUM_MAX];
 	/* time for marking a specific interrupt */
 	unsigned int MarkedTime_sec[CCU_IRQ_TYPE_AMOUNT][32][IRQ_USER_NUM_MAX];
 	/* time for marking a specific interrupt */

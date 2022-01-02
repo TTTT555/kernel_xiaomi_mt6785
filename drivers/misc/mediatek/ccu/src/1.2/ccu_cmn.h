@@ -48,6 +48,7 @@ struct ccu_device_s {
 	unsigned long n3d_a_base;
 	unsigned int irq_num;
 	struct mutex user_mutex;
+	struct mutex clk_mutex;
 	/* list of vlist_type(struct ccu_user_s) */
 	struct list_head user_list;
 	/* notify enque thread */
@@ -169,12 +170,7 @@ int ccu_run(void);
  * @s:          wait mode.
  */
 int ccu_waitirq(struct CCU_WAIT_IRQ_STRUCT *WaitIrq);
-int ccu_AFwaitirq(struct CCU_WAIT_IRQ_STRUCT *WaitIrq, int tg_num);
 
-/**
- * ccu_irq - interrupt wait.
- * @s:          wait mode.
- */
 int ccu_flushLog(int argc, int *argv);
 
 /**

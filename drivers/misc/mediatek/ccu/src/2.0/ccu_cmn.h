@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -122,7 +122,7 @@ struct ccu_cmd_s_list {
 	struct list_head link;
 };
 
-/* ========================== define in ccu_hw.c  ========================== */
+/* ===== define in ccu_hw.c  ===== */
 
 /**
  * ccu_init_hw - init the procedure related to hw,
@@ -187,7 +187,7 @@ int ccu_read_info_reg(int regNo);
 int ccu_query_power_status(void);
 
 
-/* ========================== define in ccu_drv.c  ========================== */
+/* ===== define in ccu_drv.c  ===== */
 
 /**
  * ccu_create_user - create ccu user, and add to user list
@@ -247,7 +247,7 @@ void ccu_clock_disable(void);
 
 /* LOG & AEE */
 #define CCU_TAG "[ccu]"
-/* ========================== define in ccu_drv.c  ========================== */
+
 #define LOG_DBG_MUST(format, args...) \
 	pr_debug(CCU_TAG "[%s] " format, __func__, ##args)
 #define LOG_INF_MUST(format, args...) \
@@ -271,9 +271,9 @@ void ccu_clock_disable(void);
 
 #define ccu_error(format, args...) \
 		do {\
-			LOG_ERR(CCU_TAG " error:"format, ##args); \
+			LOG_ERR(CCU_TAG " error:"format, ##args);  \
 			aee_kernel_exception("CCU", \
-				"[CCU] error:"format, ##args); \
+				"[CCU] error:"format, ##args);  \
 		} while (0)
 
 #define ccu_aee(format, args...) \
