@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 XiaoMi, Inc.
+ * Copyright (C) 2016 MediaTek Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -382,7 +383,7 @@ static kal_uint32 return_sensor_id(void)
 	module_id = read_eeprom_module_id(0x0001);
 
 	if (0x01 == module_id)
-		sensor_id += 1;
+		sensor_id -= 1;
 
 	printk("[%s] sensor_id: 0x%x module_id: 0x%x", __func__, sensor_id, module_id);
 

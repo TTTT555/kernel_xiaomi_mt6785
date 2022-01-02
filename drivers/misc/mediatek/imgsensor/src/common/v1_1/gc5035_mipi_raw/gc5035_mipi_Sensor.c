@@ -1,5 +1,4 @@
  /*
- * Copyright (C) 2018-2020 XiaoMi, Inc.
  *
  * Filename:
  * ---------
@@ -160,7 +159,7 @@ static struct imgsensor_info_struct imgsensor_info = {
 	.mclk = 24,
 	.mipi_lane_num = SENSOR_MIPI_1_LANE,
 	.i2c_addr_table = {0x6e, 0xff},
-	.hs_trail = 0x09,
+	.hs_trail = 21,
 };
 
 static struct imgsensor_struct imgsensor = {
@@ -2093,6 +2092,38 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		*feature_return_para_16 = imgsensor.frame_length;
 		*feature_para_len = 4;
 		break;
+
+	case SENSOR_FEATURE_GET_PERIOD_BY_SCENARIO:
+		switch (*feature_data) {
+		case MSDK_SCENARIO_ID_CAMERA_CAPTURE_JPEG:
+			*(MUINT32 *)(uintptr_t)(*(feature_data + 1))
+			= (imgsensor_info.cap.framelength << 16)
+				+ imgsensor_info.cap.linelength;
+			break;
+		case MSDK_SCENARIO_ID_VIDEO_PREVIEW:
+			*(MUINT32 *)(uintptr_t)(*(feature_data + 1))
+			= (imgsensor_info.normal_video.framelength << 16)
+				+ imgsensor_info.normal_video.linelength;
+			break;
+		case MSDK_SCENARIO_ID_HIGH_SPEED_VIDEO:
+			*(MUINT32 *)(uintptr_t)(*(feature_data + 1))
+			= (imgsensor_info.hs_video.framelength << 16)
+				+ imgsensor_info.hs_video.linelength;
+			break;
+		case MSDK_SCENARIO_ID_SLIM_VIDEO:
+			*(MUINT32 *)(uintptr_t)(*(feature_data + 1))
+			= (imgsensor_info.slim_video.framelength << 16)
+				+ imgsensor_info.slim_video.linelength;
+			break;
+		case MSDK_SCENARIO_ID_CAMERA_PREVIEW:
+		default:
+			*(MUINT32 *)(uintptr_t)(*(feature_data + 1))
+			= (imgsensor_info.pre.framelength << 16)
+				+ imgsensor_info.pre.linelength;
+			break;
+		}
+		break;
+
 	case SENSOR_FEATURE_GET_PIXEL_CLOCK_FREQ:
 		*feature_return_para_32 = imgsensor.pclk;
 		*feature_para_len = 4;
