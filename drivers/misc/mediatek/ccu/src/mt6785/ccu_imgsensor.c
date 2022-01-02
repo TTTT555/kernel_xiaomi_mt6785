@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,15 +21,15 @@
 /*>>>>> Information get from imgsensor driver*/
 static int32_t g_ccu_sensor_current_fps[IMGSENSOR_SENSOR_IDX_MAX_NUM] = {-1};
 #define SENSOR_NAME_MAX_LEN 50
-static struct ccu_sensor_info g_ccu_sensor_info_main  = {-1, NULL};
+static struct ccu_sensor_info g_ccu_sensor_info_main  = {-1, 0, NULL};
 static char g_ccu_sensor_name_main[SENSOR_NAME_MAX_LEN];
-static struct ccu_sensor_info g_ccu_sensor_info_main2  = {-1, NULL};
+static struct ccu_sensor_info g_ccu_sensor_info_main2  = {-1, 0, NULL};
 static char g_ccu_sensor_name_main2[SENSOR_NAME_MAX_LEN];
-static struct ccu_sensor_info g_ccu_sensor_info_main3  = {-1, NULL};
+static struct ccu_sensor_info g_ccu_sensor_info_main3  = {-1, 0, NULL};
 static char g_ccu_sensor_name_main3[SENSOR_NAME_MAX_LEN];
-static struct ccu_sensor_info g_ccu_sensor_info_sub  = {-1, NULL};
+static struct ccu_sensor_info g_ccu_sensor_info_sub  = {-1, 0, NULL};
 static char g_ccu_sensor_name_sub[SENSOR_NAME_MAX_LEN];
-static struct ccu_sensor_info g_ccu_sensor_info_sub2  = {-1, NULL};
+static struct ccu_sensor_info g_ccu_sensor_info_sub2  = {-1, 0, NULL};
 static char g_ccu_sensor_name_sub2[SENSOR_NAME_MAX_LEN];
 
 /*<<<<< Information get from imgsensor driver*/

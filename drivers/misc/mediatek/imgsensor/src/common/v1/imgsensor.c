@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 MediaTek Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -498,13 +499,14 @@ int imgsensor_set_driver(struct IMGSENSOR_SENSOR *psensor)
 
 	static int orderedSearchList[MAX_NUM_OF_SUPPORT_SENSOR] = {-1};
 	static bool get_search_list = true;
-	int i = 0;
-	int j = 0;
+	unsigned int i = 0;
+	unsigned int j = 0;
 	char *driver_name = NULL;
 
 	imgsensor_mutex_init(psensor_inst);
 	imgsensor_i2c_init(&psensor_inst->i2c_cfg,
-	   imgsensor_custom_config[psensor->inst.sensor_idx].i2c_dev);
+	imgsensor_custom_config[
+	(unsigned int)psensor->inst.sensor_idx].i2c_dev);
 
 	imgsensor_i2c_filter_msg(&psensor_inst->i2c_cfg, true);
 
@@ -1257,7 +1259,8 @@ static inline int adopt_CAMERA_HW_FeatureControl(void *pBuf)
 			pr_err(" ioctl copy from user failed\n");
 			return -EFAULT;
 		}
-		if (FeatureParaLen > FEATURE_CONTROL_MAX_DATA_SIZE)
+		if (!FeatureParaLen ||
+			FeatureParaLen > FEATURE_CONTROL_MAX_DATA_SIZE)
 			return -EINVAL;
 
 		pFeaturePara = kmalloc(FeatureParaLen, GFP_KERNEL);
@@ -1997,8 +2000,6 @@ static inline int adopt_CAMERA_HW_FeatureControl(void *pBuf)
 		break;
 	}
 	case SENSOR_FEATURE_SET_I2C_BUF_MODE_EN:
-		imgsensor_i2c_buffer_mode(
-		    (*(unsigned long long *)pFeaturePara));
 
 		break;
 	case SENSOR_FEATURE_SET_ESHUTTER:

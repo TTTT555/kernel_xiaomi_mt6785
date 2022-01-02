@@ -106,7 +106,7 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 	struct IMGSENSOR_HW_DEVICE       *pdev;
 	int                               pin_cnt = 0;
 
-	while (ppwr_seq < ppower_sequence + IMGSENSOR_HW_SENSOR_MAX_NUM &&
+/*	while (ppwr_seq < ppower_sequence + IMGSENSOR_HW_SENSOR_MAX_NUM &&
 		ppwr_seq->name != NULL) {
 		if (!strcmp(ppwr_seq->name, PLATFORM_POWER_SEQ_NAME)) {
 			if (sensor_idx == ppwr_seq->_idx)
@@ -120,6 +120,7 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 
 	if (ppwr_seq->name == NULL)
 		return IMGSENSOR_RETURN_ERROR;
+*/
 
 	ppwr_info = ppwr_seq->pwr_info;
 
@@ -185,22 +186,28 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 {
 	enum IMGSENSOR_SENSOR_IDX sensor_idx = psensor->inst.sensor_idx;
 	char str_index[LENGTH_FOR_SNPRINTF];
+	int ret = 0;
 
 	pr_info(
 		"sensor_idx %d, power %d curr_sensor_name %s, enable list %s\n",
 		sensor_idx,
 		pwr_status,
 		curr_sensor_name,
-		phw->enable_sensor_by_index[sensor_idx] == NULL
+		phw->enable_sensor_by_index[(uint32_t)sensor_idx] == NULL
 		? "NULL"
-		: phw->enable_sensor_by_index[sensor_idx]);
+		: phw->enable_sensor_by_index[(uint32_t)sensor_idx]);
 
-	if (phw->enable_sensor_by_index[sensor_idx] &&
-	!strstr(phw->enable_sensor_by_index[sensor_idx], curr_sensor_name))
+	if (phw->enable_sensor_by_index[(uint32_t)sensor_idx] &&
+	!strstr(phw->enable_sensor_by_index[(uint32_t)sensor_idx], curr_sensor_name))
 		return IMGSENSOR_RETURN_ERROR;
 
 
-	snprintf(str_index, sizeof(str_index), "%d", sensor_idx);
+	ret = snprintf(str_index, sizeof(str_index), "%d", sensor_idx);
+	if (ret == 0) {
+		pr_info("Error! snprintf allocate 0");
+		ret = IMGSENSOR_RETURN_ERROR;
+		return ret;
+	}
 	imgsensor_hw_power_sequence(
 	    phw,
 	    sensor_idx,
