@@ -1,5 +1,5 @@
 config MTK_CCU
-	tristate "MediaTek CCU Driver"
+	bool "MTK_CCU"
 	default n
 	---help---
 	  Support 3A using CCU hardware

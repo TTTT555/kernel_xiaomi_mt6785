@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2017 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,9 +20,10 @@
 
 #include "imgsensor_sensor.h"
 #include "imgsensor_hw.h"
-#include "linux/regulator/consumer.h"
 
-#include <mt-plat/upmu_common.h> //XIAOMI: libin16 add
+#include "linux/regulator/consumer.h"
+#include <mt-plat/upmu_common.h>
+
 enum IMGSENSOR_RETURN imgsensor_hw_init(struct IMGSENSOR_HW *phw)
 {
 	struct IMGSENSOR_HW_SENSOR_POWER      *psensor_pwr;
@@ -111,8 +112,8 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 	struct IMGSENSOR_HW_DEVICE       *pdev;
 	int                               pin_cnt = 0;
 	int                               ret = 0;
+	static struct regulator *ldo2_reg;	
 
-	static struct regulator *ldo2_reg;
 	static DEFINE_RATELIMIT_STATE(ratelimit, 1 * HZ, 30);
 
 #ifdef CONFIG_FPGA_EARLY_PORTING  /*for FPGA*/
@@ -164,9 +165,10 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 				ldo2_reg = regulator_get(NULL, "vtp");
 				ret = regulator_enable(ldo2_reg);
 				if (ret == 0) {
-					PK_DBG("[xiaomi] regulator_enable ldo2_reg success");
+					PK_DBG("regulator_enable ldo2_reg success");
 				}
 			}
+
 			mdelay(ppwr_info->pin_on_delay);
 		}
 
@@ -211,6 +213,7 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 		struct IMGSENSOR_SENSOR *psensor,
 		enum IMGSENSOR_HW_POWER_STATUS pwr_status)
 {
+	int ret = 0;
 	enum IMGSENSOR_SENSOR_IDX sensor_idx = psensor->inst.sensor_idx;
 	char *curr_sensor_name = psensor->inst.psensor_list->name;
 	char str_index[LENGTH_FOR_SNPRINTF];
@@ -219,16 +222,14 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 		sensor_idx,
 		pwr_status,
 		curr_sensor_name,
-		phw->enable_sensor_by_index[sensor_idx] == NULL
+		phw->enable_sensor_by_index[(uint32_t)sensor_idx] == NULL
 		? "NULL"
-		: phw->enable_sensor_by_index[sensor_idx]);
+		: phw->enable_sensor_by_index[(uint32_t)sensor_idx]);
 
-	if (phw->enable_sensor_by_index[sensor_idx] &&
-	!strstr(phw->enable_sensor_by_index[sensor_idx], curr_sensor_name))
+	if (phw->enable_sensor_by_index[(uint32_t)sensor_idx] &&
+	!strstr(phw->enable_sensor_by_index[(uint32_t)sensor_idx], curr_sensor_name))
 		return IMGSENSOR_RETURN_ERROR;
 
-
-	// XIAOMI: libin16 add --start
 	if (NULL != strstr("ov8856", curr_sensor_name)) {
 		if (pwr_status == IMGSENSOR_HW_POWER_STATUS_ON)
 			pmic_config_interface(PMIC_RG_BUCK_VS2_VOTER_EN_SET_ADDR, 0x1,
@@ -237,8 +238,13 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 			pmic_config_interface(PMIC_RG_BUCK_VS2_VOTER_EN_CLR_ADDR, 0x1,
 				PMIC_RG_BUCK_VS2_VOTER_EN_CLR_MASK, PMIC_RG_BUCK_VS2_VOTER_EN_CLR_SHIFT);
 	}
-	// XIAOMI: libin16 add --end
 
+	ret = snprintf(str_index, sizeof(str_index), "%d", sensor_idx);
+	if (ret < 0) {
+		pr_info("Error! snprintf allocate 0");
+		ret = IMGSENSOR_RETURN_ERROR;
+		return ret;
+	}
 	imgsensor_hw_power_sequence(
 			phw,
 			sensor_idx,

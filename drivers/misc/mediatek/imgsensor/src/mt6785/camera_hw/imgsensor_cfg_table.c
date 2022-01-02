@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2017 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -148,20 +148,6 @@ struct IMGSENSOR_HW_POWER_SEQ platform_power_sequence[] = {
 
 /* Legacy design */
 struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
-#if defined(S5KGW1SP_MIPI_RAW)
-	{
-		SENSOR_DRVNAME_S5KGW1SP_MIPI_RAW,
-		{
-			{RST, Vol_Low, 0},
-			{SensorMCLK, Vol_High, 0},
-			{DOVDD, Vol_1800, 0},
-			{AVDD, Vol_2800, 0},
-			{DVDD, Vol_1200, 2},
-			{PDN, Vol_High, 1},
-			{RST, Vol_High, 5}
-		},
-	},
-#endif
 #if defined(S5KGW1SUNNY_MIPI_RAW)
 	{
 		SENSOR_DRVNAME_S5KGW1SUNNY_MIPI_RAW,
@@ -187,6 +173,19 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 			{DVDD, Vol_1200, 2},
 			{PDN, Vol_High, 1},
 			{RST, Vol_High, 5}
+		},
+	},
+#endif
+#if defined(S5K3T2_MIPI_RAW)
+	{
+		SENSOR_DRVNAME_S5K3T2_MIPI_RAW,
+		{
+			{RST, Vol_Low, 1},
+			{SensorMCLK, Vol_High, 1},
+			{DOVDD, Vol_1800, 1},
+			{AVDD, Vol_2800, 1},
+			{DVDD, Vol_1200, 1},
+			{RST, Vol_High, 10}
 		},
 	},
 #endif
@@ -1090,6 +1089,19 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 			{SensorMCLK, Vol_High, 2},
 			{PDN, Vol_High, 0},
 			{RST, Vol_High, 10}
+		},
+	},
+#endif
+#if defined(S5KHM2SP_MIPI_RAW)
+	{
+		SENSOR_DRVNAME_S5KHM2SP_MIPI_RAW,
+		{
+			{RST, Vol_Low, 0},
+			{DVDD, Vol_1100, 1},
+			{AVDD, Vol_2800, 1},
+			{DOVDD, Vol_1800, 1},
+			{RST, Vol_High, 1},
+			{SensorMCLK, Vol_High, 3}
 		},
 	},
 #endif

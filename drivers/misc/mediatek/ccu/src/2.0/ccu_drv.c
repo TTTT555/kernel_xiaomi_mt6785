@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 MediaTek Inc.
- * Copyright (C) 2020 XiaoMi, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -107,17 +107,17 @@ struct ccu_isr_callback_t {
 
 /* int number is got from kernel api */
 const struct ccu_isr_callback_t ccu_isr_callbacks[CCU_IRQ_NUM_TYPES] = {
-	/* The last used be mapping to device node. */
-	/*Must be the same name with that in device node. */
+// The last used be mapping to device node.
+// Must be the same name with that in device node.
 	{ccu_isr_callback_xxx, 0, "ccu2"}
 };
 
-/*****************************************************************************/
 static irqreturn_t ccu_isr_callback_xxx(int irq, void *device_id)
 {
 	LOG_DBG("%s:0x%x\n",  __func__. irq);
 	return IRQ_HANDLED;
 }
+
 
 static int ccu_probe(struct platform_device *dev);
 
@@ -127,9 +127,9 @@ static int ccu_suspend(struct platform_device *dev, pm_message_t mesg);
 
 static int ccu_resume(struct platform_device *dev);
 
-/*---------------------------------------------------------------------------*/
-/* CCU Driver: pm operations                                                 */
-/*---------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*/
+/* CCU Driver: pm operations                                               */
+/*-------------------------------------------------------------------------*/
 #ifdef CONFIG_PM
 int ccu_pm_suspend(struct device *device)
 {
@@ -150,7 +150,7 @@ int ccu_pm_resume(struct device *device)
 }
 
 /* extern void mt_irq_set_sens(unsigned int irq, unsigned int sens); */
-/* extern void mt_irq_set_polarity(unsigned int irq, unsigned int polarity); */
+/* extern void mt_irq_set_polarity(unsigned int irq, unsigned int polarity);*/
 int ccu_pm_restore_noirq(struct device *device)
 {
 #ifndef CONFIG_OF
@@ -176,9 +176,9 @@ const struct dev_pm_ops ccu_pm_ops = {
 };
 
 
-/*---------------------------------------------------------------------------*/
-/* CCU Driver: Prototype                                                     */
-/*---------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/* CCU Driver: Prototype                                                    */
+/*--------------------------------------------------------------------------*/
 
 static const struct of_device_id ccu_of_ids[] = {
 	{.compatible = "mediatek,ccu",},
@@ -201,7 +201,7 @@ static struct platform_driver ccu_driver = {
 #ifdef CONFIG_PM
 		   .pm = &ccu_pm_ops,
 #endif
-			}
+		}
 };
 
 
@@ -334,7 +334,6 @@ int ccu_flush_commands_from_queue(struct ccu_user_s *user)
 	return 0;
 }
 
-/*****************************************************************************/
 int ccu_pop_command_from_queue(struct ccu_user_s *user, struct ccu_cmd_s **rcmd)
 {
 	int ret;
@@ -342,8 +341,8 @@ int ccu_pop_command_from_queue(struct ccu_user_s *user, struct ccu_cmd_s **rcmd)
 
 	/* wait until condition is true */
 	ret = wait_event_interruptible_timeout(user->deque_wait,
-				!list_empty(&user->deque_ccu_cmd_list),
-				msecs_to_jiffies(3 * 1000));
+		!list_empty(&user->deque_ccu_cmd_list),
+		msecs_to_jiffies(3 * 1000));
 
 	/* ret == 0, if timeout; ret == -ERESTARTSYS, if signal interrupt */
 	if (ret == 0) {
@@ -376,6 +375,7 @@ int ccu_pop_command_from_queue(struct ccu_user_s *user, struct ccu_cmd_s **rcmd)
 	*rcmd = cmd;
 	return 0;
 }
+
 
 int ccu_delete_user(struct ccu_user_s *user)
 {
@@ -553,7 +553,6 @@ static long ccu_compat_ioctl(struct file *flip, unsigned int cmd,
 		cmd, user->open_pid, current->comm,
 		current->pid, current->tgid);
 	}
-
 	return ret;
 }
 #endif
@@ -611,6 +610,7 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 	struct CCU_WAIT_IRQ_STRUCT IrqInfo;
 	struct ccu_user_s *user = flip->private_data;
 
+
 	LOG_DBG("%s+, cmd:%d\n", __func__, cmd);
 
 	if ((cmd != CCU_IOCTL_SET_POWER) && (cmd != CCU_IOCTL_FLUSH_LOG) &&
@@ -645,7 +645,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 	case CCU_IOCTL_ENQUE_COMMAND:
 	{
 		struct ccu_cmd_s *cmd = 0;
-
 		/*allocate ccu_cmd_st_list instead of ccu_cmd_st*/
 		ccu_alloc_command(&cmd);
 		ret = copy_from_user(cmd, (void *)arg,
@@ -690,19 +689,19 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			"[FLUSH_COMMAND] flush command failed, ret=%d\n", ret);
 			return -EFAULT;
 		}
+
 		break;
 	}
 	case CCU_IOCTL_WAIT_IRQ:
 	{
 		if (copy_from_user(&IrqInfo, (void *)arg,
-		 sizeof(struct CCU_WAIT_IRQ_STRUCT)) == 0) {
+			sizeof(struct CCU_WAIT_IRQ_STRUCT)) == 0) {
 			if ((IrqInfo.Type >= CCU_IRQ_TYPE_AMOUNT) ||
 				(IrqInfo.Type < 0)) {
 				ret = -EFAULT;
 				LOG_ERR("invalid type(%d)\n", IrqInfo.Type);
 				goto EXIT;
 			}
-
 			LOG_DBG(
 			"IRQ type(%d), userKey(%d), timeout(%d), sttype(%d), st(%d)\n",
 			IrqInfo.Type,
@@ -712,10 +711,9 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			IrqInfo.EventInfo.Status);
 
 			ret = ccu_waitirq(&IrqInfo);
-
 			if (copy_to_user((void *)arg,
 				&IrqInfo, sizeof(struct CCU_WAIT_IRQ_STRUCT))
-			    != 0) {
+				!= 0) {
 				LOG_ERR("copy_to_user failed\n");
 				ret = -EFAULT;
 			}
@@ -723,7 +721,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			LOG_ERR("copy_from_user failed\n");
 			ret = -EFAULT;
 		}
-
 		break;
 	}
 	case CCU_IOCTL_WAIT_AF_IRQ:
@@ -736,7 +733,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 				LOG_ERR("invalid type(%d)\n", IrqInfo.Type);
 				goto EXIT;
 			}
-
 			LOG_DBG(
 			"AFIRQ type(%d), userKey(%d), timeout(%d), sttype(%d), st(%d)\n",
 			IrqInfo.Type,
@@ -754,10 +750,9 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 					IrqInfo.bDumpReg);
 				goto EXIT;
 			}
-
 			if (copy_to_user((void *)arg,
 				&IrqInfo, sizeof(struct CCU_WAIT_IRQ_STRUCT))
-			    != 0) {
+				!= 0) {
 				LOG_ERR("copy_to_user failed\n");
 				ret = -EFAULT;
 			}
@@ -765,7 +760,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			LOG_ERR("copy_from_user failed\n");
 			ret = -EFAULT;
 		}
-
 		break;
 	}
 	case CCU_IOCTL_SEND_CMD:	/*--todo: not used for now, remove it*/
@@ -802,7 +796,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			ret = -EFAULT;
 			break;
 		}
-
 		ret = ccu_get_i2c_dma_buf_addr(&ioarg);
 		if (ret != 0) {
 			LOG_ERR("ccu_get_i2c_dma_buf_addr fail: %d\n", ret);
@@ -811,7 +804,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 
 		ret = copy_to_user((void *)arg, &ioarg,
 			sizeof(struct ccu_i2c_buf_mva_ioarg));
-
 		break;
 	}
 	case CCU_IOCTL_SET_I2C_MODE:
@@ -822,7 +814,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			LOG_DBG("ccu_i2c_controller_init fail\n");
 			ret = -EINVAL;
 		}
-
 		break;
 	}
 	case CCU_IOCTL_GET_CURRENT_FPS:
@@ -830,10 +821,8 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 		int32_t current_fps_list[IMGSENSOR_SENSOR_IDX_MAX_NUM];
 
 		ccu_get_current_fps(current_fps_list);
-
 		ret = copy_to_user((void *)arg, &current_fps_list,
 			sizeof(int32_t) * IMGSENSOR_SENSOR_IDX_MAX_NUM);
-
 		break;
 	}
 	case CCU_IOCTL_GET_SENSOR_I2C_SLAVE_ADDR:
@@ -847,7 +836,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 
 		break;
 	}
-
 	case CCU_IOCTL_GET_SENSOR_NAME:
 	{
 		#define SENSOR_NAME_MAX_LEN 32
@@ -906,11 +894,11 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 	}
 
 	case CCU_READ_REGISTER:
-		{
-			int regToRead = (int)arg;
+	{
+		int regToRead = (int)arg;
 
-			return ccu_read_info_reg(regToRead);
-		}
+		return ccu_read_info_reg(regToRead);
+	}
 	case CCU_IOCTL_IMPORT_MEM:
 	{
 		struct import_mem_s import_mem;
@@ -923,7 +911,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 			ret);
 			break;
 		}
-
 		for (i = 0; i < CCU_IMPORT_BUF_NUM; i++) {
 			if (import_mem.memID[i] == CCU_IMPORT_BUF_UNDEF) {
 				LOG_INF_MUST("imported buffer count: %d\n", i);
@@ -939,7 +926,6 @@ static long ccu_ioctl(struct file *flip, unsigned int cmd, unsigned long arg)
 				break;
 			}
 		}
-
 		break;
 	}
 	default:
@@ -955,7 +941,6 @@ EXIT:
 		cmd, _IOC_NR(cmd), user->open_pid,
 		current->comm, current->pid, current->tgid);
 	}
-
 	return ret;
 }
 
@@ -987,7 +972,10 @@ static int ccu_release(struct inode *inode, struct file *flip)
 	return 0;
 }
 
-/*****************************************************************************/
+
+/****************************************************************************
+ *
+ ***************************************************************************/
 static int ccu_mmap(struct file *flip, struct vm_area_struct *vma)
 {
 	unsigned long length = 0;
@@ -1216,7 +1204,7 @@ static int ccu_probe(struct platform_device *pdev)
 		 g_ccu_device->n3d_a_base);
 
 	}
-	/* get Clock control from device tree.  */
+/* get Clock control from device tree.  */
 	{
 		ccu_clk_ctrl[0] =
 		devm_clk_get(g_ccu_device->dev, "CCU_CLK_CAM_CCU");
@@ -1231,8 +1219,8 @@ static int ccu_probe(struct platform_device *pdev)
 	g_ccu_device->irq_num = irq_of_parse_and_map(node, 0);
 	LOG_DBG(
 	"probe 1, ccu_base: 0x%lx, bin_base: 0x%lx, irq_num: %d, pdev: %p\n",
-	g_ccu_device->ccu_base, g_ccu_device->bin_base,
-	g_ccu_device->irq_num, g_ccu_device->dev);
+		g_ccu_device->ccu_base, g_ccu_device->bin_base,
+		g_ccu_device->irq_num, g_ccu_device->dev);
 
 	if (g_ccu_device->irq_num > 0) {
 		/* get IRQ flag from device node */
@@ -1289,7 +1277,7 @@ static int ccu_probe(struct platform_device *pdev)
 		init_waitqueue_head(&wait_queue_enque);
 
 /*for (i = 0; i < CCU_IRQ_NUM_TYPES; i++) {*/
-/*tasklet_init(ccu_tasklet[i].pCCU_tkt, ccu_tasklet[i].tkt_cb, 0);*/
+/*      tasklet_init(ccu_tasklet[i].pCCU_tkt, ccu_tasklet[i].tkt_cb, 0);*/
 /*}*/
 
 		/*register i2c driver callback*/
@@ -1432,6 +1420,7 @@ static void __exit CCU_EXIT(void)
 #endif
 
 }
+
 
 /*****************************************************************************/
 module_init(CCU_INIT);
