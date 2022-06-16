@@ -799,14 +799,8 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
 }
 EXPORT_SYMBOL(xfrm_policy_insert);
 
-<<<<<<< HEAD
-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u32 if_id,
-					  u8 type, int dir,
-					  struct xfrm_selector *sel,
-=======
-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mark *mark,
+struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mark *mark, u32 if_id,
 					  u8 type, int dir, struct xfrm_selector *sel,
->>>>>>> a0852817cd9d9a69d3abd18508e6936ca03a3b54
 					  struct xfrm_sec_ctx *ctx, int delete,
 					  int *err)
 {
@@ -819,12 +813,8 @@ struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mar
 	ret = NULL;
 	hlist_for_each_entry(pol, chain, bydst) {
 		if (pol->type == type &&
-<<<<<<< HEAD
 		    pol->if_id == if_id &&
-		    (mark & pol->mark.m) == pol->mark.v &&
-=======
 		    xfrm_policy_mark_match(mark, pol) &&
->>>>>>> a0852817cd9d9a69d3abd18508e6936ca03a3b54
 		    !selector_cmp(sel, &pol->selector) &&
 		    xfrm_sec_ctx_match(ctx, pol->security)) {
 			xfrm_pol_hold(pol);
@@ -849,14 +839,8 @@ struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mar
 }
 EXPORT_SYMBOL(xfrm_policy_bysel_ctx);
 
-<<<<<<< HEAD
-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
-				     u8 type, int dir, u32 id, int delete,
-				     int *err)
-=======
-struct xfrm_policy *xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark,
+struct xfrm_policy *xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark, u32 if_id,
 					 u8 type, int dir, u32 id, int delete, int *err)
->>>>>>> a0852817cd9d9a69d3abd18508e6936ca03a3b54
 {
 	struct xfrm_policy *pol, *ret;
 	struct hlist_head *chain;
@@ -871,12 +855,8 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net, const struct xfrm_mark *ma
 	ret = NULL;
 	hlist_for_each_entry(pol, chain, byidx) {
 		if (pol->type == type && pol->index == id &&
-<<<<<<< HEAD
 		    pol->if_id == if_id &&
-		    (mark & pol->mark.m) == pol->mark.v) {
-=======
 		    xfrm_policy_mark_match(mark, pol)) {
->>>>>>> a0852817cd9d9a69d3abd18508e6936ca03a3b54
 			xfrm_pol_hold(pol);
 			if (delete) {
 				*err = security_xfrm_policy_delete(
